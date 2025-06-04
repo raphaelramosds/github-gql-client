@@ -24,8 +24,10 @@ const fetchData = async () => {
         }
 
         const data = await response.json();
+        document.querySelector('#feedback').innerHTML = 'Client connected to Github GraphQL API'
         console.log(data);
     } catch (e) {
+        document.querySelector('#feedback').innerHTML = 'Error when connecting to Github GraphQL API'
         console.log(e.message);
     }
 }
