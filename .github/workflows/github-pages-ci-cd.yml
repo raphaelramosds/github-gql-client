@@ -24,7 +24,7 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: build
+          folder: dist
           target-folder: portfolio
           token: ${{ secrets.CI_PERSONAL_ACCESS_TOKEN }}
           repository-name: ${{ secrets.CI_REPOSITORY_NAME }}
