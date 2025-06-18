@@ -1,0 +1,30 @@
+name: Github Pages CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Install and Build 🔧
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
+          target-folder: portfolio
+          token: ${{ secrets.CI_PERSONAL_ACCESS_TOKEN }}
+          repository-name: ${{ secrets.CI_REPOSITORY_NAME }}
