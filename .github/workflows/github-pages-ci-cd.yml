@@ -21,10 +21,29 @@ jobs:
           npm ci
           npm run build
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: dist
-          target-folder: portfolio
-          token: ${{ secrets.CI_PERSONAL_ACCESS_TOKEN }}
-          repository-name: ${{ secrets.CI_REPOSITORY_NAME }}
+      - name: Deploy with rebase to gh-pages branch 🚀
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Clone repo on a temp folder
+          git clone --depth=1 --branch=gh-pages https://x-access-token:${{ secrets.CI_PERSONAL_ACCESS_TOKEN }}@github.com/${{ secrets.CI_REPOSITORY_NAME }} gh-pages-temp
+
+          cd gh-pages-temp
+
+          # Adds the destination repository as an explicit remote (redundant but safe)
+          git remote add upstream https://x-access-token:${{ secrets.CI_PERSONAL_ACCESS_TOKEN }}@github.com/${{ secrets.CI_REPOSITORY_NAME }}
+          git fetch upstream main
+
+          # Rebase with the main branch of target repository
+          git rebase upstream/main || echo "⚠️ Rebase teve conflitos e foi ignorado"
+
+          # Remove current folder on github.io and copy new dist files into it
+          rm -rf portfolio
+          mkdir -p portfolio
+          cp -r ../dist/* portfolio/
+
+          # Commit and push
+          git add .
+          git commit -m "Deploy via GitHub Actions 🚀" || echo "Nothing to commit"
+          git push origin gh-pages --force
